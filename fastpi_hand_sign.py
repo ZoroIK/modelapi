@@ -4,10 +4,10 @@ import numpy as np
 from pydantic import BaseModel
 import os
 import requests
-
+import joblib
 # IBM Cloud Object Storage URL (Replace with your actual URL)
 MODEL_URL = "https://s3.us-east.cloud-object-storage.appdomain.cloud/rfc/model.p"
-MODEL_PATH = "model.p"
+MODEL_PATH = "model_compressed.p"
 
 # Function to download the model if it's not already present
 def download_model():
