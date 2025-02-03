@@ -1,18 +1,18 @@
-from fastapi import FastAPI, HTTPException
+import os
 import pickle
+import requests
+from fastapi import FastAPI, HTTPException
 import numpy as np
 from pydantic import BaseModel
-import os
-import requests
-import joblib
-# IBM Cloud Object Storage URL (Replace with your actual URL)
-MODEL_URL = "https://s3.us-east.cloud-object-storage.appdomain.cloud/rfc/model.p"
-MODEL_PATH = "model_compressed.p"
 
-# Function to download the model if it's not already present
+# Google Cloud Storage model URL (Replace with your actual URL)
+MODEL_URL = "https://storage.googleapis.com/rcfmodel/model.p"
+MODEL_PATH = "model.p"
+
+# Function to download the model if not present
 def download_model():
     if not os.path.exists(MODEL_PATH):
-        print("Downloading model from IBM Cloud...")
+        print("Downloading model from Google Cloud Storage...")
         response = requests.get(MODEL_URL, stream=True)
         with open(MODEL_PATH, "wb") as f:
             for chunk in response.iter_content(chunk_size=1024):
@@ -22,13 +22,15 @@ def download_model():
 # Download and load the model
 download_model()
 with open(MODEL_PATH, "rb") as f:
-    model_dict = joblib.load(f)
+    model_dict = pickle.load(f)
     model = model_dict["model"]
 
-# Define API app
+print("Model loaded successfully!")
+
+# Define FastAPI app
 app = FastAPI()
 
-# Define request body model
+# Define request body
 class LandmarkData(BaseModel):
     landmarks: list
 
@@ -43,7 +45,7 @@ async def predict(data: LandmarkData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Run the API server (only for local testing)
+# Run locally
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
