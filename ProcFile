@@ -1,0 +1,1 @@
+web: uvicorn fastpi_hand_sign:app --host=0.0.0.0 --port=$PORT
