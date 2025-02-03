@@ -22,7 +22,7 @@ def download_model():
 # Download and load the model
 download_model()
 with open(MODEL_PATH, "rb") as f:
-    model_dict = pickle.load(f)
+    model_dict = joblib.load(f)
     model = model_dict["model"]
 
 # Define API app
